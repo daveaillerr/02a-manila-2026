@@ -7,20 +7,33 @@ import { cn } from '@/lib/utils';
 
 const navItems = [
   { label: 'About', href: '#about' },
-  { label: 'Event Details', href: '#event-details' },
+  { label: 'Event', href: '#event-details' },
   { label: 'Team', href: '#team' },
-  { label: 'Get Involved', href: '#get-involved' },
+  { label: 'Register', href: '#get-involved' },
   { label: 'Policies', href: '#policies' },
 ];
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [activeItem, setActiveItem] = useState('#about');
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      setIsScrolled(window.scrollY > 50);
+      
+      const sections = navItems.map(item => {
+        const el = document.querySelector(item.href);
+        return {
+          id: item.href,
+          top: el ? el.getBoundingClientRect().top : 0
+        };
+      });
+      
+      const current = sections.find(s => s.top > -150 && s.top < 300);
+      if (current) setActiveItem(current.id);
     };
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -29,75 +42,101 @@ export function Navigation() {
     setIsOpen(false);
     const element = document.querySelector(href);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      const offset = 80;
+      const bodyRect = document.body.getBoundingClientRect().top;
+      const elementRect = element.getBoundingClientRect().top;
+      const elementPosition = elementRect - bodyRect;
+      const offsetPosition = elementPosition - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
     }
   };
 
   return (
     <nav
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-        isScrolled
-          ? 'bg-background/80 backdrop-blur-md border-b border-border/50'
-          : 'bg-background/0'
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-500 px-6 py-4 flex justify-center',
+        isScrolled ? 'top-2' : 'top-0'
       )}
     >
-      <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="text-xl font-bold text-foreground">
-          Zero to Agent
-        </div>
+      <div className={cn(
+        "w-full max-w-7xl flex items-center justify-between transition-all duration-500 px-6 py-3 rounded-full border border-transparent",
+        isScrolled && "bg-black/60 backdrop-blur-xl border-white/10 shadow-2xl"
+      )}>
+        {/* Logo */}
+        <button 
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} 
+          className="flex items-center gap-2 group"
+        >
+          <span className="text-sm font-bold text-white tracking-widest uppercase hidden md:block">
+            Zero to Agent
+          </span>
+        </button>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-8">
+        {/* Centered Pill Navigation (Desktop) */}
+        <div className="hidden md:flex items-center gap-1 px-2 py-1 rounded-full bg-white/5 border border-white/5 backdrop-blur-sm">
           {navItems.map((item) => (
             <button
               key={item.label}
               onClick={() => handleNavClick(item.href)}
-              className="text-foreground/70 hover:text-foreground transition-colors text-sm"
+              className={cn(
+                "px-4 py-1.5 text-[11px] font-mono uppercase tracking-widest transition-all duration-300 rounded-full",
+                activeItem === item.href 
+                  ? "bg-white text-black font-bold" 
+                  : "text-white/40 hover:text-white"
+              )}
             >
               {item.label}
             </button>
           ))}
         </div>
 
-        {/* Desktop CTA */}
-        <div className="hidden md:block">
+        {/* Action Buttons */}
+        <div className="flex items-center gap-4">
           <Button
-            size="sm"
-            className="bg-foreground text-background hover:bg-foreground/90"
+            onClick={() => handleNavClick('#get-involved')}
+            className="hidden md:flex bg-white text-black hover:bg-black hover:text-white border border-white transition-all duration-300 rounded-full px-6 font-black text-[10px] h-8 tracking-widest uppercase"
           >
-            Register
+            Register Now
           </Button>
-        </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden text-foreground hover:text-foreground/70 transition-colors"
-        >
-          {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="md:hidden w-10 h-10 flex items-center justify-center rounded-full bg-white/5 text-white border border-white/10"
+          >
+            {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
       </div>
 
-      {/* Mobile Navigation */}
+      {/* Mobile Navigation Dropdown */}
       {isOpen && (
-        <div className="md:hidden bg-background/95 backdrop-blur-md border-b border-border/50">
-          <div className="px-4 py-4 space-y-4">
+        <div className="md:hidden absolute top-full mt-4 left-6 right-6 bg-black/95 border border-white/10 rounded-3xl backdrop-blur-2xl shadow-2xl animate-in slide-in-from-top-4 fade-in duration-300 overflow-hidden">
+          <div className="p-6 space-y-4">
             {navItems.map((item) => (
               <button
                 key={item.label}
                 onClick={() => handleNavClick(item.href)}
-                className="block w-full text-left text-foreground/70 hover:text-foreground transition-colors py-2"
+                className={cn(
+                  "block w-full text-left px-4 py-3 text-sm font-mono tracking-[0.2em] uppercase rounded-xl transition-colors",
+                  activeItem === item.href ? "bg-white text-black font-bold" : "text-white/50 hover:text-white"
+                )}
               >
                 {item.label}
               </button>
             ))}
-            <Button
-              size="sm"
-              className="w-full bg-foreground text-background hover:bg-foreground/90"
-            >
-              Register
-            </Button>
+            <div className="pt-4 border-t border-white/10">
+              <Button
+                onClick={() => handleNavClick('#get-involved')}
+                className="w-full bg-white text-black h-12 rounded-2xl font-black text-xs tracking-widest uppercase"
+              >
+                Register
+              </Button>
+            </div>
           </div>
         </div>
       )}

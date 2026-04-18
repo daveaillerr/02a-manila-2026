@@ -36,6 +36,9 @@ export const metadata: Metadata = {
   },
 }
 
+import { Navigation } from '@/components/navigation'
+import { Footer } from '@/components/footer'
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -44,7 +47,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark bg-background">
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
+        <Navigation />
         {children}
+        <Footer />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

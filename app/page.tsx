@@ -1,25 +1,28 @@
 'use client';
 
-import { Navigation } from '@/components/navigation';
-import { Hero } from '@/components/hero';
-import { AboutSection } from '@/components/about-section';
-import { EventDetails } from '@/components/event-details';
-import { TeamSection } from '@/components/team-section';
-import { GetInvolved } from '@/components/get-involved';
-import { PoliciesSection } from '@/components/policies-section';
-import { Footer } from '@/components/footer';
+import { HeroPage } from '@/components/HeroPage';
+import { AboutPage } from '@/components/AboutPage';
+import { EventPage } from '@/components/EventPage';
+import { TeamPage } from '@/components/TeamPage';
+import { InvolvePage } from '@/components/InvolvePage';
+import { PoliciesPage } from '@/components/PoliciesPage';
+
+/**
+ * Main Home Page
+ * 
+ * This is the primary single-page entry point. 
+ * It renders all cleaned and reorganized page components in sequence.
+ */
 
 export default function Home() {
   return (
     <main className="w-full">
-      <Navigation />
-      <Hero />
-      <AboutSection />
-      <EventDetails />
-      <TeamSection />
-      <GetInvolved />
-      <PoliciesSection />
-      <Footer />
+      <HeroPage />
+      <AboutPage />
+      <EventPage />
+      <TeamPage />
+      <InvolvePage />
+      <PoliciesPage />
     </main>
   );
 }
